@@ -39,6 +39,16 @@ function loadHistory() {
     }
 }
 
+historyEl.on("click", "button", function(event) {
+    event.preventDefault();
+
+    var lat = $(this).attr("data-lat");
+    var lon = $(this).attr("data-lon");
+
+    loadCurrentData(lat, lon);
+    loadForecastData(lat, lon);
+});
+
 function loadCurrentData(lat, lon) {
     var apiUrl = buildApiUrl(currentDataUrl, lat, lon);
 
@@ -83,7 +93,7 @@ function buildApiUrl(baseUrl, lat, lon) {
     apiUrl = apiUrl.replace("{lon}", lon);
     apiUrl = apiUrl.replace("{apikey}", apiKey);
 
-    console.log(apiUrl);
+    // console.log(apiUrl);
     return apiUrl;
 }
 
