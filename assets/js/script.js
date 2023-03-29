@@ -1,12 +1,14 @@
 // Base URLs that will be used to build API URLs with actual param values
 const currentDataUrl = "https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={apikey}&units=imperial";
 const forecastDataUrl = "https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={apikey}&units=imperial";
-const geocodingDataUrl = "http://api.openweathermap.org/geo/1.0/direct?q={cityname}&appid={apikey}";
+const geocodingDataUrl = "https://api.openweathermap.org/geo/1.0/direct?q={cityname}&limit=10&appid={apikey}";
 
 // API Key registered under my account
 const apiKey = "2ce42c2263577b2c42cd002a3868e925";
 
 // DOM HTML Elements
+var cityNameEl = $("#city-name");
+var searchButtonEl = $("#search");
 var historyEl = $("#history");
 var currentWeatherEl = $("#weather-today");
 
@@ -54,7 +56,31 @@ function loadHistory() {
     }
 }
 
-// Add an "on click" handler using jQuery event delegation
+// This function adds an item to the list of cities saves to localStorage
+function saveHistory(cityName, lat, lon) {
+    // Create new object to be inserted to history
+    var historyItem = {
+        city: cityName,
+        lat: lat,
+        lon: lon
+    };
+
+    // Retrieve JSON array from localStorage
+    var arrHistory = JSON.parse(localStorage.getItem("Weather-Dashboard"));
+
+    // If the localStorage item doesn't exit (null) then create an empty array
+    if (arrHistory === null) {
+        arrHistory = [];
+    }
+
+    // Insert array element to the beginning of the array
+    arrHistory.unshift(historyItem);
+
+    // Save to localStorage
+    localStorage.setItem("Weather-Dashboard", JSON.stringify(arrHistory));
+}
+
+// Add an "on click" handler using jQuery event delegation to history DIV element
 historyEl.on("click", "button", function(event) {
     event.preventDefault();
 
@@ -67,6 +93,39 @@ historyEl.on("click", "button", function(event) {
     loadForecastData(lat, lon);
 });
 
+// Add a "submit" handler to search button
+searchButtonEl.submit(function(event) {
+    event.preventDefault();
+
+    var cityName = cityNameEl.val().trim();
+    if(cityName.length === 0) {
+        alert("Enter name of city"); // change this to modal
+        return;
+    }
+
+    var apiUrl = buildGeocodingApiUrl(geocodingDataUrl, cityName);
+    console.log(apiUrl);
+
+    // fetch data - lat and lon
+    fetch(apiUrl)
+        .then(function (response) {
+            if (response.ok) { // If the response is OK, then return JSON object
+                return response.json();
+            }
+        }).then(function (data) {
+            console.log(data[0].name);
+            console.log(data[0].lat);
+            console.log(data[0].lon);
+            console.log(data[0].country);
+            console.log(typeof data[0].state === "undefined");
+
+            saveHistory(data[0].name, data[0].lat, data[0].lon);
+            loadHistory();
+            loadCurrentData(data[0].lat, data[0].lon);
+            loadForecastData(data[0].lat, data[0].lon);
+        });
+
+});
 
 // This function will load the current weather data (big card) for the lat and lon values specified
 // It receives 2 parameters: latitude and longitude
