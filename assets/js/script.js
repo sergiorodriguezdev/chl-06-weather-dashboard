@@ -11,19 +11,12 @@ var cityNameEl = $("#city-name");
 var searchButtonEl = $("#search");
 var historyEl = $("#history");
 var currentWeatherEl = $("#weather-today");
+var forecastWeatherEl = $("#weather-forecast");
 
 // This function will initialize the app once it loads
 function init() {
     loadHistory();
-
-    // loadSampleData();
 }
-
-function loadSampleData() {
-    loadCurrentData("39.66173777978936", "-104.74240323970344");
-    loadForecastData("39.66173777978936", "-104.74240323970344");
-}
-
 
 // This function loads list of cities previously searched for from localStorage
 function loadHistory() {
@@ -104,7 +97,6 @@ searchButtonEl.submit(function(event) {
     }
 
     var apiUrl = buildGeocodingApiUrl(geocodingDataUrl, cityName);
-    console.log(apiUrl);
 
     // fetch data - lat and lon
     fetch(apiUrl)
@@ -113,11 +105,11 @@ searchButtonEl.submit(function(event) {
                 return response.json();
             }
         }).then(function (data) {
-            console.log(data[0].name);
-            console.log(data[0].lat);
-            console.log(data[0].lon);
-            console.log(data[0].country);
-            console.log(typeof data[0].state === "undefined");
+            // console.log(data[0].name);
+            // console.log(data[0].lat);
+            // console.log(data[0].lon);
+            // console.log(data[0].country);
+            // console.log(typeof data[0].state === "undefined");
 
             saveHistory(data[0].name, data[0].lat, data[0].lon);
             loadHistory();
@@ -149,12 +141,12 @@ function loadCurrentData(lat, lon) {
 
             // Create a h2 element and set its text value to the name of the city + date + weather condition icon
             var weatherHeader = $("<h2>");
-            weatherHeader.text(cityName + " (" + currentDate + ") - icon: ");
+            weatherHeader.text(cityName + " (" + currentDate + ") ");
 
             // Add the icon img
             // https://openweathermap.org/img/wn/{icon}.png
-            var weatherIcon = $("<i>");
-            weatherIcon.text(data.weather[0].icon);
+            var weatherIcon = $("<img>");
+            weatherIcon.attr("src", "https://openweathermap.org/img/wn/" + data.weather[0].icon + ".png");
             weatherHeader.append(weatherIcon);
 
             // Create p element and set its text value to the temperature
@@ -185,6 +177,76 @@ function loadCurrentData(lat, lon) {
 function loadForecastData(lat, lon) {
     // Use helper function to get the properly formatted URL
     var apiUrl = buildWeatherApiUrl(forecastDataUrl, lat, lon);
+
+    // Fetch the data
+    fetch(apiUrl)
+        .then(function (response) {
+            if (response.ok) { // If the response is OK, then return JSON object
+                return response.json();
+            }
+        }).then(function (data) {
+            var forecastData = data.list;
+
+            // Get the hour in 24 hour format for the current time
+            // Then, round down to the nearest multiple of 3 (divide by 3 then multiply by 3)
+            var nowTime = parseInt(dayjs().format("H"));
+            nowTime = Math.floor(nowTime / 3) * 3;
+            nowTime = 0;
+
+            // Delete children elements from weather-forecast DIV element
+            forecastWeatherEl.empty();
+            
+            for (var i = 0; i < forecastData.length; i++) {
+                // Get the hour in 24 hour format for the 3-hour step specified in the dt_txt field
+                var forecastTime = dayjs(forecastData[i].dt_txt).format("H");
+                forecastTime = parseInt(forecastTime);
+
+                // Only print data for timestamps closest to the current time for the next 5 days
+                if(forecastTime === nowTime) {
+                    // Retrieve values from JSON object
+                    var currentDate = dayjs.unix(forecastData[i].dt).format("MM/DD/YYYY"); // Convert dt property from Unix to specified format
+                    var tempData = forecastData[i].main.temp; // Temperature
+                    var windData = forecastData[i].wind.speed; // Wind speed
+                    var humidityData = forecastData[i].main.humidity; // Humidity
+        
+                    // Create a h2 element and set its text value to the name of the city + date + weather condition icon
+                    var weatherHeader = $("<h2>");
+                    weatherHeader.text(currentDate + " ");
+        
+                    // Add the icon img
+                    // https://openweathermap.org/img/wn/{icon}.png
+                    var weatherIcon = $("<img>");
+                    weatherIcon.attr("src", "https://openweathermap.org/img/wn/" + forecastData[i].weather[0].icon + ".png");
+        
+                    // Create p element and set its text value to the temperature
+                    var temperatureText = $("<p>");
+                    temperatureText.text("Temp: " + tempData + "°F");
+        
+                    // Create p element and set its text value to the wind speed
+                    var windText = $("<p>");
+                    windText.text("Wind: " + windData + "MPH");
+        
+                    // Create p element and set its text value to the humidity
+                    var humidityText = $("<p>");
+                    humidityText.text("Humidity: " + humidityData + "%");
+        
+                    // Create new DIV element (card)
+                    var forecastCard = $("<div>");
+
+                    // Append new children elements to card DIV element
+                    forecastCard.append(weatherHeader);
+                    forecastCard.append(weatherIcon);
+                    forecastCard.append(temperatureText);
+                    forecastCard.append(windText);
+                    forecastCard.append(humidityText);
+
+                    // Append card DIV element to weather-forecast DIV element
+                    forecastWeatherEl.append(forecastCard);
+                }
+            }
+
+            
+        });
 }
 
 // Helper function to build weather/forecast API URL
