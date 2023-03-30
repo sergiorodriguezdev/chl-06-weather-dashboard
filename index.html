@@ -13,50 +13,66 @@
     <title>Weather Dashboard</title>
 </head>
 <body>
-    <!-- <nav class="navbar bg-body-tertiary">
-        <div class="container-fluid justify-content-center">
-          <span class="navbar-text">
-            Weather Dashboard
-          </span>
-        </div>
-    </nav> -->
-
-    <div id="navbar">
+    <nav id="navbar" class="navbar bg-primary mb-3 text-white">
+        <div class="container-fluid justify-content-center">    
             <h1>Weather Dashboard</h1>
+        </div>
+    </nav>
+
+    <div id="container" class="container-fluid row">
+        <div class="col-sm-4">
+            <div id="search">
+                <form action="" class="d-grid gap-2">
+                    <h2>Search for a City:</h2>
+                    <input type="text" name="city-name" id="city-name" placeholder="Enter a city" class="form-control" required>
+                    <button id="search" class="btn btn-primary">Search</button>
+                    <!-- <button id="search" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Search</button> -->
+                </form>
+            </div>
+            <hr>
+            <div id="history" class="d-grid gap-2">
+
+            </div>
+
+            <!-- <div id="helper" class="">
+                <h2>No cities found</h2>
+                <ul>
+                    <button>city 1</button>
+                    <button>city 2</button>
+                    <button>city 3</button>
+                </ul>
+            </div> -->
+        </div>
+        <div class="col">
+            <h2>Current Weather:</h2>
+            <div id="weather-today" class="card p-2 mb-3">
+
+            </div>
+            
+            <div>
+                <h2>5-Day Forecast:</h2>
+                <div id="weather-forecast" class="row">
+
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="container">
-        <div id="search">
-            <form action="">
-                <label for="city-name">Search for a City:</label>
-                <input type="text" name="city-name" id="city-name" placeholder="Enter a city">
-                <button id="search">Search</button>
-            </form>
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            ...
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+            </div>
         </div>
-        <hr>
-        <div id="history">
-            <!-- <button>1</button>
-            <button>2</button>
-            <button>3</button>
-            <button>4</button> -->
-        </div>
-        <hr>
-        <div id="helper" class="">
-            <h2>No cities found</h2>
-            <ul>
-                <button>city 1</button>
-                <button>city 2</button>
-                <button>city 3</button>
-            </ul>
-        </div>
-        <div id="weather-today">
-            <!-- <div>Today</div> -->
-        </div>
-        <hr>
-        <div id="weather-forecast">
-            <div>Tomorrow</div>
-            <div>Day after tomorrow</div>
-            <div>Next Day</div>
         </div>
     </div>
     

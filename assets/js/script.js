@@ -15,6 +15,7 @@ var forecastWeatherEl = $("#weather-forecast");
 
 // This function will initialize the app once it loads
 function init() {
+
     loadHistory();
 }
 
@@ -22,6 +23,18 @@ function init() {
 function loadHistory() {
     // Retrieve JSON array from localStorage
     var arrHistory = JSON.parse(localStorage.getItem("Weather-Dashboard"));
+
+    // Delete children elements from history DIV element
+    historyEl.empty();
+
+    // Add Clear History button
+    var clearHistory = $("<button>");
+    clearHistory.attr("id", "clear");
+    clearHistory.text("Clear History");
+    clearHistory.addClass("btn btn-primary");
+    clearHistory.attr("disabled", "");
+
+    historyEl.append(clearHistory);
 
     // If the localStorage item doesn't exit (null) then save an empty array to localStorage, exit function
     // If the array is empty, exit function
@@ -32,9 +45,10 @@ function loadHistory() {
     } else if (arrHistory.length === 0) {
         return;
     }
-
-    // Delete children elements from history DIV element
-    historyEl.empty();
+    else {
+        // If array is not empty, enable Clear History button
+        clearHistory.removeAttr("disabled");
+    }
     
     // For every item in the array, create a button element
     // Set its text value to the name of the city
@@ -44,6 +58,7 @@ function loadHistory() {
         historyItem.text(arrHistory[i].city);
         historyItem.attr("data-lat", arrHistory[i].lat);
         historyItem.attr("data-lon", arrHistory[i].lon);
+        historyItem.addClass("btn btn-secondary");
 
         historyEl.append(historyItem);
     }
@@ -77,25 +92,33 @@ function saveHistory(cityName, lat, lon) {
 historyEl.on("click", "button", function(event) {
     event.preventDefault();
 
-    // Retrieve lat and lon data-* attributes
-    var lat = $(this).attr("data-lat");
-    var lon = $(this).attr("data-lon");
+    // If the button that was clicked is the Clear History button, then delete the history
+    if ($(this).attr("id") === "clear") {
+        historyEl.empty();
+        localStorage.setItem("Weather-Dashboard", "[]");
+        loadHistory();
+    }
+    else {
+        // Retrieve lat and lon data-* attributes
+        var lat = $(this).attr("data-lat");
+        var lon = $(this).attr("data-lon");
 
-    // Load data for specified lat and lon values
-    loadCurrentData(lat, lon);
-    loadForecastData(lat, lon);
+        // Load data for specified lat and lon values
+        loadCurrentData(lat, lon);
+        loadForecastData(lat, lon);
+    }
+
 });
 
 // Add a "submit" handler to search button
 searchButtonEl.submit(function(event) {
+    
     event.preventDefault();
 
+    // Get city name from search box and trim white spaces
     var cityName = cityNameEl.val().trim();
-    if(cityName.length === 0) {
-        alert("Enter name of city"); // change this to modal
-        return;
-    }
 
+    // Use helper function to get the properly formatted URL
     var apiUrl = buildGeocodingApiUrl(geocodingDataUrl, cityName);
 
     // fetch data - lat and lon
@@ -105,13 +128,13 @@ searchButtonEl.submit(function(event) {
                 return response.json();
             }
         }).then(function (data) {
-            // console.log(data[0].name);
-            // console.log(data[0].lat);
-            // console.log(data[0].lon);
-            // console.log(data[0].country);
-            // console.log(typeof data[0].state === "undefined");
+            // Format the city name value to include the state (if property exists) and country code
+            var formattedCityName = data[0].name;
+            formattedCityName += (typeof data[0].state !== "undefined") ? ", " + data[0].state : "";
+            formattedCityName += " (" + data[0].country + ")";
 
-            saveHistory(data[0].name, data[0].lat, data[0].lon);
+            // Save entry to history and load wehater data
+            saveHistory(formattedCityName, data[0].lat, data[0].lon);
             loadHistory();
             loadCurrentData(data[0].lat, data[0].lon);
             loadForecastData(data[0].lat, data[0].lon);
@@ -210,14 +233,15 @@ function loadForecastData(lat, lon) {
                     var humidityData = forecastData[i].main.humidity; // Humidity
         
                     // Create a h2 element and set its text value to the name of the city + date + weather condition icon
-                    var weatherHeader = $("<h2>");
+                    var weatherHeader = $("<h4>");
                     weatherHeader.text(currentDate + " ");
         
                     // Add the icon img
                     // https://openweathermap.org/img/wn/{icon}.png
                     var weatherIcon = $("<img>");
                     weatherIcon.attr("src", "https://openweathermap.org/img/wn/" + forecastData[i].weather[0].icon + ".png");
-        
+                    weatherIcon.addClass("col-4");
+
                     // Create p element and set its text value to the temperature
                     var temperatureText = $("<p>");
                     temperatureText.text("Temp: " + tempData + "°F");
@@ -232,6 +256,7 @@ function loadForecastData(lat, lon) {
         
                     // Create new DIV element (card)
                     var forecastCard = $("<div>");
+                    forecastCard.addClass("col card p-2 m-2 bg-secondary text-white")
 
                     // Append new children elements to card DIV element
                     forecastCard.append(weatherHeader);
