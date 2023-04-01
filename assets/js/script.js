@@ -19,7 +19,7 @@ function init() {
     loadHistory();
 }
 
-// This function loads list of cities previously searched for from localStorage
+// This function loads a list of cities previously searched for from localStorage
 function loadHistory() {
     // Retrieve JSON array from localStorage
     var arrHistory = JSON.parse(localStorage.getItem("Weather-Dashboard"));
@@ -62,10 +62,13 @@ function loadHistory() {
         historyItem.addClass("btn btn-secondary");
 
         historyEl.append(historyItem);
+
+        // Simulate a click for the first button in the history
+        if (i === 0) historyItem.click();
     }
 }
 
-// This function adds an item to the list of cities saves to localStorage
+// This function adds an item to the list of cities saved to localStorage
 function saveHistory(cityName, lat, lon) {
     // Create new object to be inserted to history
     var historyItem = {
@@ -94,6 +97,7 @@ historyEl.on("click", "button", function(event) {
     event.preventDefault();
 
     // If the button that was clicked is the Clear History button, then delete the history
+    // Otherwise, load weather data
     if ($(this).attr("id") === "clear") {
         historyEl.empty();
         localStorage.setItem("Weather-Dashboard", "[]");
@@ -129,19 +133,22 @@ searchButtonEl.submit(function(event) {
                 return response.json();
             }
         }).then(function (data) {
-            // Right now, I am using the first city returned from OpenWeather (index = 0)
-            // Need to add logic to handle multiple/duplicate cities
+            
+            if (data.length > 0) {
+                // Right now, I am using the first city returned from OpenWeather (index = 0)
+                // Format the city name value to include the state (if state property exists in object) and country code
+                var formattedCityName = data[0].name;
+                formattedCityName += (typeof data[0].state !== "undefined") ? ", " + data[0].state : "";
+                formattedCityName += " (" + data[0].country + ")";
 
-            // Format the city name value to include the state (if property exists) and country code
-            var formattedCityName = data[0].name;
-            formattedCityName += (typeof data[0].state !== "undefined") ? ", " + data[0].state : "";
-            formattedCityName += " (" + data[0].country + ")";
+                // Save entry to history and load weather data
+                saveHistory(formattedCityName, data[0].lat, data[0].lon);
 
-            // Save entry to history and load wehater data
-            saveHistory(formattedCityName, data[0].lat, data[0].lon);
-            loadHistory();
-            loadCurrentData(data[0].lat, data[0].lon);
-            loadForecastData(data[0].lat, data[0].lon);
+                loadHistory();
+                
+                loadCurrentData(data[0].lat, data[0].lon);
+                loadForecastData(data[0].lat, data[0].lon);
+            }
         });
 
 });
@@ -170,8 +177,7 @@ function loadCurrentData(lat, lon) {
             var weatherHeader = $("<h2>");
             weatherHeader.text(cityName + " (" + currentDate + ") ");
 
-            // Add the icon img
-            // https://openweathermap.org/img/wn/{icon}.png
+            // Create img element, set its src attribute to the corresponding OpenWeather icon URL
             var weatherIcon = $("<img>");
             weatherIcon.attr("src", "https://openweathermap.org/img/wn/" + data.weather[0].icon + ".png");
             weatherHeader.append(weatherIcon);
@@ -190,6 +196,7 @@ function loadCurrentData(lat, lon) {
 
             // Delete children elements from weather-today DIV element
             currentWeatherEl.empty();
+
             // Append new children elements to weather-today DIV element
             currentWeatherEl.append(weatherHeader);
             currentWeatherEl.append(temperatureText);
@@ -240,8 +247,7 @@ function loadForecastData(lat, lon) {
                     var weatherHeader = $("<h4>");
                     weatherHeader.text(currentDate + " ");
         
-                    // Add the icon img
-                    // https://openweathermap.org/img/wn/{icon}.png
+                    // Create img element, set its src attribute to the corresponding OpenWeather icon URL
                     var weatherIcon = $("<img>");
                     weatherIcon.attr("src", "https://openweathermap.org/img/wn/" + forecastData[i].weather[0].icon + ".png");
                     weatherIcon.addClass("col-4");
@@ -285,7 +291,6 @@ function buildWeatherApiUrl(baseUrl, lat, lon) {
     apiUrl = apiUrl.replace("{lon}", lon);
     apiUrl = apiUrl.replace("{apikey}", apiKey);
 
-    // console.log(apiUrl);
     // Return string created
     return apiUrl;
 }
@@ -296,7 +301,6 @@ function buildGeocodingApiUrl(baseUrl, city) {
     var apiUrl = baseUrl.replace("{cityname}", city);
     apiUrl = apiUrl.replace("{apikey}", apiKey);
 
-    // console.log(apiUrl);
     // Return string created
     return apiUrl;
 }
