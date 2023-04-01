@@ -12,54 +12,59 @@
     
     <title>Weather Dashboard</title>
 </head>
-<body>
-    <nav id="navbar" class="navbar bg-primary mb-3 text-white">
-        <div class="container-fluid justify-content-center">    
-            <h1>Weather Dashboard</h1>
-        </div>
-    </nav>
-
-    <div id="container" class="container-fluid row">
-        <div class="col-sm-4">
-            <div id="search">
-                <form action="" class="d-grid gap-2">
-                    <h2>Search for a City:</h2>
-                    <input type="text" name="city-name" id="city-name" placeholder="Enter a city" class="form-control" required>
-                    <button id="search" class="btn btn-primary">Search</button>
-                    <!-- <button id="search" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Search</button> -->
-                </form>
+<body class="bg-dark">
+    <header>
+        <nav id="navbar" class="navbar navbar-dark bg-dark">
+            <div class="container justify-content-center">    
+                <h1 class="navbar-text text-white">Weather Dashboard</h1>
             </div>
-            <hr>
-            <div id="history" class="d-grid gap-2">
+        </nav>
+    </header>
 
+    <div id="container" class="container bg-light p-2">
+        <div class="row">
+            <div class="col-3">
+                <div id="search">
+                    <form action="" class="d-grid gap-2">
+                        <h2>Search for a City:</h2>
+                        <input type="text" name="city-name" id="city-name" placeholder="Enter a city" class="form-control" required>
+                        <button id="search" class="btn btn-primary">Search</button>
+                        <!-- <button id="search" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Search</button> -->
+                    </form>
+                </div>
+                <hr>
+                <div id="history" class="d-grid gap-2">
+
+                </div>
+
+                <!-- <div id="helper" class="">
+                    <h2>No cities found</h2>
+                    <ul>
+                        <button>city 1</button>
+                        <button>city 2</button>
+                        <button>city 3</button>
+                    </ul>
+                </div> -->
             </div>
+            <div class="col-9">
+                <h2>Current Weather:</h2>
+                <div id="weather-today" class="card p-2 mb-3 ">
 
-            <!-- <div id="helper" class="">
-                <h2>No cities found</h2>
-                <ul>
-                    <button>city 1</button>
-                    <button>city 2</button>
-                    <button>city 3</button>
-                </ul>
-            </div> -->
-        </div>
-        <div class="col">
-            <h2>Current Weather:</h2>
-            <div id="weather-today" class="card p-2 mb-3">
+                </div>
+                
+                <div>
+                    <h2>5-Day Forecast:</h2>
+                    <div id="weather-forecast" class="card-group">
 
-            </div>
-            
-            <div>
-                <h2>5-Day Forecast:</h2>
-                <div id="weather-forecast" class="row">
-
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+
     <!-- Modal -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <!-- <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -74,7 +79,7 @@
             </div>
         </div>
         </div>
-    </div>
+    </div> -->
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>

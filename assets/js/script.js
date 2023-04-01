@@ -53,6 +53,7 @@ function loadHistory() {
     // For every item in the array, create a button element
     // Set its text value to the name of the city
     // Add lat and lon values to data-* attributes which will be used in click callback function
+    // I would like to add a way for the user to remove the individual history items
     for (var i = 0; i < arrHistory.length; i++) {
         var historyItem = $("<button>");
         historyItem.text(arrHistory[i].city);
@@ -128,6 +129,9 @@ searchButtonEl.submit(function(event) {
                 return response.json();
             }
         }).then(function (data) {
+            // Right now, I am using the first city returned from OpenWeather (index = 0)
+            // Need to add logic to handle multiple/duplicate cities
+
             // Format the city name value to include the state (if property exists) and country code
             var formattedCityName = data[0].name;
             formattedCityName += (typeof data[0].state !== "undefined") ? ", " + data[0].state : "";
@@ -157,7 +161,7 @@ function loadCurrentData(lat, lon) {
         }).then(function (data) {
             // Retrieve values from JSON object
             var cityName = data.name; // City name
-            var currentDate = dayjs.unix(data.dt).format("MM/DD/YYYY"); // Convert dt property from Unix to specified format
+            var currentDate = dayjs.unix(data.dt).format("MMM DD"); // Convert dt property from Unix to specified format
             var tempData = data.main.temp; // Temperature
             var windData = data.wind.speed; // Wind speed
             var humidityData = data.main.humidity; // Humidity
@@ -227,7 +231,7 @@ function loadForecastData(lat, lon) {
                 // Only print data for timestamps closest to the current time for the next 5 days
                 if(forecastTime === nowTime) {
                     // Retrieve values from JSON object
-                    var currentDate = dayjs.unix(forecastData[i].dt).format("MM/DD/YYYY"); // Convert dt property from Unix to specified format
+                    var currentDate = dayjs.unix(forecastData[i].dt).format("MMM DD"); // Convert dt property from Unix to specified format
                     var tempData = forecastData[i].main.temp; // Temperature
                     var windData = forecastData[i].wind.speed; // Wind speed
                     var humidityData = forecastData[i].main.humidity; // Humidity
@@ -256,7 +260,7 @@ function loadForecastData(lat, lon) {
         
                     // Create new DIV element (card)
                     var forecastCard = $("<div>");
-                    forecastCard.addClass("col card p-2 m-2 bg-secondary text-white")
+                    forecastCard.addClass("card p-2 m-2 text-bg-secondary")
 
                     // Append new children elements to card DIV element
                     forecastCard.append(weatherHeader);
