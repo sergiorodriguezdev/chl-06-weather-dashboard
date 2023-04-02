@@ -17,6 +17,7 @@ var forecastWeatherEl = $("#weather-forecast");
 function init() {
 
     loadHistory();
+    
 }
 
 // This function loads a list of cities previously searched for from localStorage
@@ -50,21 +51,32 @@ function loadHistory() {
         clearHistory.removeAttr("disabled");
     }
     
-    // For every item in the array, create a button element
-    // Set its text value to the name of the city
+    // For every item in the array, create a DIV element
+    // Append a child button element and set its text value to the name of the city
     // Add lat and lon values to data-* attributes which will be used in click callback function
-    // I would like to add a way for the user to remove the individual history items
+    // Append a child "close" button
+    // Append DIV to main history DIV element
     for (var i = 0; i < arrHistory.length; i++) {
-        var historyItem = $("<button>");
-        historyItem.text(arrHistory[i].city);
-        historyItem.attr("data-lat", arrHistory[i].lat);
-        historyItem.attr("data-lon", arrHistory[i].lon);
-        historyItem.addClass("btn btn-secondary");
+        var historyItem = $("<div>");
+        historyItem.addClass("d-flex align-items-center");
+
+        var historyBtn = $("<button>");
+        historyBtn.text(arrHistory[i].city);
+        historyBtn.attr("data-lat", arrHistory[i].lat);
+        historyBtn.attr("data-lon", arrHistory[i].lon);
+        historyBtn.addClass("btn btn-secondary flex-fill");
+
+        var delButton = $("<button>");
+        delButton.attr("type", "button");
+        delButton.addClass("btn-close");
+        
+        historyItem.append(historyBtn);
+        historyItem.append(delButton);
 
         historyEl.append(historyItem);
 
         // Simulate a click for the first button in the history
-        if (i === 0) historyItem.click();
+        if (i === 0) historyBtn.click();
     }
 }
 
@@ -92,18 +104,59 @@ function saveHistory(cityName, lat, lon) {
     localStorage.setItem("Weather-Dashboard", JSON.stringify(arrHistory));
 }
 
-// Add an "on click" handler using jQuery event delegation to history DIV element
-historyEl.on("click", "button", function(event) {
-    event.preventDefault();
+// This function removes an item from the list of cities saved to localStorage
+// If "index" is not provided, the history will be deleted completely from localStorage
+//  This option is used by the Clear History button
+function clearHistory(index) {
 
+    if (typeof index === "undefined") {
+        // Clear History
+        historyEl.empty();
+        localStorage.setItem("Weather-Dashboard", "[]");
+        return;
+    }
+
+    // Retrieve JSON array from localStorage
+    var arrHistory = JSON.parse(localStorage.getItem("Weather-Dashboard"));
+
+    // Validate index value is within range
+    if (index < 0 || index >= arrHistory.length) {
+        return;
+    }
+
+    // Remove 1 item from array at index
+    arrHistory.splice(index, 1);
+
+    // Save to localStorage
+    localStorage.setItem("Weather-Dashboard", JSON.stringify(arrHistory));
+}
+
+historyEl.on("click", ".btn-close", function(event) {
+
+    // Get the X button's parent DIV
+    var divParent = $(this).parent();
+
+    // Get the index of the parent from the collection matching selector
+    //  Selector - DIV: id=history , DIV children: class=d-flex
+    var deletedItemIndex = $("#history .d-flex").index(divParent);
+
+    // Delete individual item using clearHistory function, reload history 
+    clearHistory(deletedItemIndex);
+    loadHistory();
+});
+
+// Add an "on click" handler using jQuery event delegation to history DIV element
+historyEl.on("click", ".btn", function(event) {
+    
     // If the button that was clicked is the Clear History button, then delete the history
     // Otherwise, load weather data
     if ($(this).attr("id") === "clear") {
-        historyEl.empty();
-        localStorage.setItem("Weather-Dashboard", "[]");
+
+        clearHistory();
         loadHistory();
     }
     else {
+
         // Retrieve lat and lon data-* attributes
         var lat = $(this).attr("data-lat");
         var lon = $(this).attr("data-lon");
@@ -148,6 +201,11 @@ searchButtonEl.submit(function(event) {
                 
                 loadCurrentData(data[0].lat, data[0].lon);
                 loadForecastData(data[0].lat, data[0].lon);
+            }
+            else {
+                // Show BS Modal - can't use jQuery
+                const myModal = new bootstrap.Modal("#error-no-cities");
+                myModal.show();
             }
         });
 
