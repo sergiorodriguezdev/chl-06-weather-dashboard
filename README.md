@@ -2,16 +2,11 @@
 
 ## Project Description
 
-The scheduler web app will help the end user keep track of their work schedule. It will visually inform them which events have ended, which event is currently taking place, and what their schedule looks like for the rest of the day. It also allows them to update their schedule on the fly and to come back to it throughout the day.
+The weather dashboard allows the end user to look up the weather conditions for any city around the world. It presents them with the current and future conditions for the city they search for. Additionally, it keeps track of which cities they have searched for so they can search for the weather conditions again with the click of a button. 
 
-I used the following third party APIs/libraries to create this web app:
-- Bootstrap
-- Font Awesome
-- Google Fonts
-- jQuery
-- Day.js
+My goal from the start was to use Bootstrap to style the app. This gave me plenty of exposure to the framework and I feel more comfortable using it than I did previously. It also gave me the opportunity to implement modals and learn how to use them more in depth.
 
-The library I used the most while building this app was jQuery. I am starting to feel more comfortable traversing and dynamically updating the DOM using the objects and methods available in this library as well as navigating its documentation. All in all it was a very fulfilling experience that kept me engaged as I noticed the progress I was making.
+The weather data is coming from the [OpenWeather API](https://openweathermap.org/api). Retrieving the data wasn't difficult, but understanding how the JSON data was structured was a bigger effort than I expected which led to having to rewrite my JavaScript code a few times.
 
 ## Table of Contents
 - [User Story](#user-story)
