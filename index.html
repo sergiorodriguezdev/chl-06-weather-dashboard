@@ -38,13 +38,13 @@
 
             </div>
             <div class="col-9">
-                <h2>Current Weather:</h2>
+                <h2>Current Weather</h2>
                 <div id="weather-today" class="card p-2 mb-3 ">
-
+                    <h2 class="text-center">Search for a city to display<br>the current weather and 5-day forecast.</h2>
                 </div>
                 
                 <div>
-                    <h2>5-Day Forecast:</h2>
+                    <h2>5-Day Forecast</h2>
                     <div id="weather-forecast" class="card-group">
 
                     </div>
@@ -54,11 +54,11 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="error-no-cities" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal fade" id="error-no-cities" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">ERROR</h1>
+                    <h1 class="modal-title fs-5" id="modalLabel">ERROR</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">Can't find any cities matching your search. Please try again.</div>

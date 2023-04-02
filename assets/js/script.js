@@ -131,6 +131,7 @@ function clearHistory(index) {
     localStorage.setItem("Weather-Dashboard", JSON.stringify(arrHistory));
 }
 
+// Add an "on click" handler using jQuery event delegation to history DIV element
 historyEl.on("click", ".btn-close", function(event) {
 
     // Get the X button's parent DIV
@@ -283,14 +284,13 @@ function loadForecastData(lat, lon) {
             // Then, round down to the nearest multiple of 3 (divide by 3 then multiply by 3)
             var nowTime = parseInt(dayjs().format("H"));
             nowTime = Math.floor(nowTime / 3) * 3;
-            nowTime = 0;
 
             // Delete children elements from weather-forecast DIV element
             forecastWeatherEl.empty();
             
             for (var i = 0; i < forecastData.length; i++) {
-                // Get the hour in 24 hour format for the 3-hour step specified in the dt_txt field
-                var forecastTime = dayjs(forecastData[i].dt_txt).format("H");
+                // Get the hour in 24 hour format for the 3-hour step specified in the dt field
+                var forecastTime = dayjs.unix(forecastData[i].dt).format("H");
                 forecastTime = parseInt(forecastTime);
 
                 // Only print data for timestamps closest to the current time for the next 5 days
